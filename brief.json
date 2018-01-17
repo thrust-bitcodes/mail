@@ -6,7 +6,7 @@
   "description": "Mail handler BitCode",
   "dependencies": {
     "jars": [
-      "javax.mail:mailapi:1.4.3",
+      "javax.mail:mail:1.4.6",
       "com.sun.mail:smtp:1.4.6"
     ]
   }

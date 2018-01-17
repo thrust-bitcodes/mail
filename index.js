@@ -30,23 +30,24 @@ var Authenticator = Java.type("javax.mail.Authenticator")
 */
 function sendMail(recipientMail, subject, content, senderMail, senderPassword) {
     var properties = new Properties()
+    var mailConfig = getBitcodeConfig('mail')()
 
-    properties.put("mail.smtp.host", config.mail.smtpHost || "smtp.gmail.com")
-    properties.put("mail.smtp.socketFactory.port", config.mail.smtpSocketFactoryPort ? config.mail.smtpSocketFactoryPort.toString() : "465")
+    properties.put("mail.smtp.host", mailConfig.smtpHost || "smtp.gmail.com")
+    properties.put("mail.smtp.socketFactory.port", mailConfig.smtpSocketFactoryPort ? mailConfig.smtpSocketFactoryPort.toString() : "465")
     properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
-    properties.put("mail.smtp.auth", config.mail.smtpAuth ? config.mail.smtpAuth.toString() : "true")
-    properties.put("mail.smtp.port", config.mail.smtpPort ? config.mail.smtpPort.toString() : "465")
+    properties.put("mail.smtp.auth", mailConfig.smtpAuth ? mailConfig.smtpAuth.toString() : "true")
+    properties.put("mail.smtp.port", mailConfig.smtpPort ? mailConfig.smtpPort.toString() : "465")
 
     var session = Session.getDefaultInstance(properties,
         new Authenticator() {
             getPasswordAuthentication: function () {
-                return new PasswordAuthentication(senderMail || config.mail.senderAddress, senderPassword || config.mail.senderPassword)
+                return new PasswordAuthentication(senderMail || mailConfig.senderAddress, senderPassword || mailConfig.senderPassword)
             }
         }
     )
 
     var message = new MimeMessage(session)
-    message.setFrom(new InternetAddress(senderMail || config.mail.senderAddress))
+    message.setFrom(new InternetAddress(senderMail || mailConfig.senderAddress))
     message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail))
     message.setSubject(subject)
     message.setContent(content, "text/html; charset=utf-8")
