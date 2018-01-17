@@ -1,7 +1,15 @@
 Mail
 ===============
 
-Mail é um *bitcode* de envio de e-mails para [Thrust](https://gitlab.com/thrustjs/thrust-seed) .
+Mail é um *bitcode* de envio de e-mails para [Thrust](https://gitlab.com/thrustjs/thrust-seed).
+
+# Instalação
+
+Posicionado em um app [ThrustJS](https://github.com/thrustjs/thrust), no seu terminal:
+
+```bash
+thrust install mail
+```
 
 ## Tutorial
 ```javascript
