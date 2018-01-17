@@ -1,0 +1,13 @@
+{
+  "bit": "mail",
+  "path": "index.js",
+  "version": "1.0",
+  "author": "Cleverson Puche",
+  "description": "Mail handler BitCode",
+  "dependencies": {
+    "jars": [
+      "javax.mail:mailapi:1.4.3",
+      "com.sun.mail:smtp:1.4.6"
+    ]
+  }
+}
