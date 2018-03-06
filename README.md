@@ -26,12 +26,13 @@ mail.sendMail("johnsmith@gmail.com", "Assunto", "Conteúdo")
   * @param {String} recipientMail - e-mail do destinatário
   * @param {String} subject - Assunto do e-mail
   * @param {String} content - Conteúdo do e-mail
-  * @param {String} [senderMail] - e-mail do remetente
-  * @param {String} [senderPassword] - senha do remente
+  * @param {String} senderMail - e-mail do remetente
+  * @param {String} senderPassword - senha do remente
+  * @param {Array[Object]} attachments - anexos a serem enviados
   * @example
-   * sendMail("johnsmith@gmail.com", "Thust Mail Sender Test", "Hey John, how're u?")
+   * sendMail("johnsmith@gmail.com", "Thust Mail Sender Test", "Hey John, how're u?", [{bytes: byte[], contentType: 'application/pdf', fileName: 'relatorio.pdf'}])
 */
-function sendMail(recipientMail, subject, content, senderMail, senderPassword)
+function sendMail(recipientMail, subject, content, senderMail, senderPassword, attachments)
 ```
 
 ## Parâmetros de configuração

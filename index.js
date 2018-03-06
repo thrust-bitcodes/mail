@@ -12,6 +12,10 @@ var Transport = Java.type("javax.mail.Transport")
 var InternetAddress = Java.type("javax.mail.internet.InternetAddress")
 var MimeMessage = Java.type("javax.mail.internet.MimeMessage")
 var Authenticator = Java.type("javax.mail.Authenticator")
+var MimeBodyPart = Java.type("javax.mail.internet.MimeBodyPart")
+var MimeMultipart = Java.type("javax.mail.internet.MimeMultipart")
+var DataSource = Java.type("javax.activation.DataSource")
+var ByteArrayDataSource = Java.type ("javax.mail.util.ByteArrayDataSource")
 
 /**
 * @description
@@ -23,38 +27,56 @@ var Authenticator = Java.type("javax.mail.Authenticator")
   * @param {String} recipientMail - e-mail do destinatário
   * @param {String} subject - Assunto do e-mail
   * @param {String} content - Conteúdo do e-mail
-  * @param {String} [senderMail] - e-mail do remetente
-  * @param {String} [senderPassword] - senha do remente
+  * @param {String} senderMail - e-mail do remetente
+  * @param {String} senderPassword - senha do remente
+  * @param {Array[Object]} attachments - anexos a serem enviados
   * @example
-   * sendMail("johnsmith@gmail.com", "Thust Mail Sender Test", "Hey John, how're u?")
+   * sendMail("johnsmith@gmail.com", "Thust Mail Sender Test", "Hey John, how're u?", [{bytes: byte[], contentType: 'application/pdf', fileName: 'relatorio.pdf'}])
 */
-function sendMail(recipientMail, subject, content, senderMail, senderPassword) {
-    var properties = new Properties()
-    var mailConfig = getBitcodeConfig('mail')()
+function sendMail(recipientMail, subject, content, senderMail, senderPassword, attachments) {
+  var properties = new Properties()
+  var mailConfig = getBitcodeConfig('mail')()
 
-    properties.put("mail.smtp.host", mailConfig.smtpHost || "smtp.gmail.com")
-    properties.put("mail.smtp.socketFactory.port", mailConfig.smtpSocketFactoryPort ? mailConfig.smtpSocketFactoryPort.toString() : "465")
-    properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
-    properties.put("mail.smtp.auth", mailConfig.smtpAuth ? mailConfig.smtpAuth.toString() : "true")
-    properties.put("mail.smtp.port", mailConfig.smtpPort ? mailConfig.smtpPort.toString() : "465")
+  properties.put("mail.smtp.host", mailConfig.smtpHost || "smtp.gmail.com")
+  properties.put("mail.smtp.socketFactory.port", mailConfig.smtpSocketFactoryPort ? mailConfig.smtpSocketFactoryPort.toString() : "465")
+  properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
+  properties.put("mail.smtp.auth", mailConfig.smtpAuth ? mailConfig.smtpAuth.toString() : "true")
+  properties.put("mail.smtp.port", mailConfig.smtpPort ? mailConfig.smtpPort.toString() : "465")
 
-    var session = Session.getDefaultInstance(properties,
-        new Authenticator() {
-            getPasswordAuthentication: function () {
-                return new PasswordAuthentication(senderMail || mailConfig.senderAddress, senderPassword || mailConfig.senderPassword)
-            }
-        }
-    )
+  var session = Session.getDefaultInstance(properties,
+    new Authenticator() {
+      getPasswordAuthentication: function () {
+        return new PasswordAuthentication(senderMail || mailConfig.senderAddress, senderPassword || mailConfig.senderPassword)
+      }
+    }
+  )
 
-    var message = new MimeMessage(session)
-    message.setFrom(new InternetAddress(senderMail || mailConfig.senderAddress))
-    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail))
-    message.setSubject(subject)
-    message.setContent(content, "text/html; charset=utf-8")
+  var htmlBodyPart = new MimeBodyPart()
+  htmlBodyPart.setContent(content, "text/html; charset=utf-8")
 
-    Transport.send(message)
+  var mimeMultipart = new MimeMultipart()
+  mimeMultipart.addBodyPart(htmlBodyPart)
+
+  if (attachments && attachments.constructor.name.toLowerCase() === 'array') {
+    attachments.forEach(function (item) {
+      var dataSource = new ByteArrayDataSource(item.bytes, item.contentType)
+      var pdfBodyPart = new MimeBodyPart()
+      pdfBodyPart.setDataHandler(new DataHandler(dataSource))
+      pdfBodyPart.setFileName(item.fileName)
+
+      mimeMultipart.addBodyPart(htmlBodyPart)
+    })
+  }
+
+  var message = new MimeMessage(session)
+  message.setFrom(new InternetAddress(senderMail || mailConfig.senderAddress))
+  message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail))
+  message.setSubject(subject)
+  message.setContent(mimeMultipart)
+
+  Transport.send(message)
 }
 
 exports = {
-    sendMail: sendMail
+  sendMail: sendMail
 }
