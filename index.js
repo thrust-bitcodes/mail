@@ -14,8 +14,9 @@ var MimeMessage = Java.type("javax.mail.internet.MimeMessage")
 var Authenticator = Java.type("javax.mail.Authenticator")
 var MimeBodyPart = Java.type("javax.mail.internet.MimeBodyPart")
 var MimeMultipart = Java.type("javax.mail.internet.MimeMultipart")
+var DataHandler = Java.type("javax.activation.DataHandler")
 var DataSource = Java.type("javax.activation.DataSource")
-var ByteArrayDataSource = Java.type ("javax.mail.util.ByteArrayDataSource")
+var ByteArrayDataSource = Java.type("javax.mail.util.ByteArrayDataSource")
 
 /**
 * @description
@@ -60,11 +61,11 @@ function sendMail(recipientMail, subject, content, senderMail, senderPassword, a
   if (attachments && attachments.constructor.name.toLowerCase() === 'array') {
     attachments.forEach(function (item) {
       var dataSource = new ByteArrayDataSource(item.bytes, item.contentType)
-      var pdfBodyPart = new MimeBodyPart()
-      pdfBodyPart.setDataHandler(new DataHandler(dataSource))
-      pdfBodyPart.setFileName(item.fileName)
+      var mimeBodyPart = new MimeBodyPart()
+      mimeBodyPart.setDataHandler(new DataHandler(dataSource))
+      mimeBodyPart.setFileName(item.fileName)
 
-      mimeMultipart.addBodyPart(htmlBodyPart)
+      mimeMultipart.addBodyPart(mimeBodyPart)
     })
   }
 

@@ -1,7 +1,7 @@
 {
   "bit": "mail",
   "path": "index.js",
-  "version": "1.1",
+  "version": "1.2",
   "author": "Cleverson Puche",
   "description": "Mail handler BitCode",
   "dependencies": {
