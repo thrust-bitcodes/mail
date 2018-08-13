@@ -72,7 +72,7 @@ function sendMail(recipientMail, subject, content, senderMail, senderPassword, a
   var message = new MimeMessage(session)
   message.setFrom(new InternetAddress(senderMail || mailConfig.senderAddress))
   message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientMail))
-  message.setSubject(subject)
+  message.setSubject(subject, "UTF-8")
   message.setContent(mimeMultipart)
 
   Transport.send(message)
