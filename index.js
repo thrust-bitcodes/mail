@@ -2,6 +2,7 @@
 /*
  * @Author: Cleverson Puche
  * @Date: 2017-13-12 18:59:57
+ * Versão: 1.2.3
  */
 
 var Properties = Java.type("java.util.Properties")
@@ -39,10 +40,20 @@ function sendMail(recipientMail, subject, content, senderMail, senderPassword, a
   var mailConfig = getBitcodeConfig('mail')()
 
   properties.put("mail.smtp.host", mailConfig.smtpHost || "smtp.gmail.com")
+  properties.put("mail.smtp.socketFactory.class", ('' + mailConfig.smtpSocketFactoryClass) || "javax.net.ssl.SSLSocketFactory")
   properties.put("mail.smtp.socketFactory.port", mailConfig.smtpSocketFactoryPort ? mailConfig.smtpSocketFactoryPort.toString() : "465")
-  properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
   properties.put("mail.smtp.auth", mailConfig.smtpAuth ? mailConfig.smtpAuth.toString() : "true")
   properties.put("mail.smtp.port", mailConfig.smtpPort ? mailConfig.smtpPort.toString() : "465")
+
+  if (mailConfig.smtpStartTlsEnable) {
+    properties.put('mail.smtp.starttls.enable', 'true')
+  }
+  if (mailConfig.smtpSocketFactoryFallback) {
+    properties.put('mail.smtp.socketFactory.fallback', '' + mailConfig.smtpSocketFactoryFallback)
+  }
+  if (mailConfig.smtpSslTrust) {
+    properties.put('mail.smtp.ssl.trust', mailConfig.smtpSslTrust)
+  }
 
   var session = Session.getDefaultInstance(properties,
     new Authenticator() {
@@ -79,5 +90,6 @@ function sendMail(recipientMail, subject, content, senderMail, senderPassword, a
 }
 
 exports = {
+  VERSION: '1.2.3',
   sendMail: sendMail
 }
